@@ -13,8 +13,7 @@ class Homestead
     config.ssh.forward_agent = true
 
     # Configure The Box
-    config.vm.box = settings["box"] ||= "laravel/homestead"
-    config.vm.box_version = settings["version"] ||= ">= 0.4.0"
+    config.vm.box = settings["box"] ||= "blighter/laravel-homestead-32bit"
     config.vm.hostname = settings["hostname"] ||= "homestead"
 
     # Configure A Private Network IP
@@ -50,6 +49,7 @@ class Homestead
     # Configure A Few Parallels Settings
     config.vm.provider "parallels" do |v|
       v.update_guest_tools = true
+      v.optimize_power_consumption = false
       v.memory = settings["memory"] ||= 2048
       v.cpus = settings["cpus"] ||= 1
     end
@@ -164,6 +164,13 @@ class Homestead
           type = "symfony2"
         end
 
+      config.vm.provision "shell" do |s|
+        s.path = scriptDir + "/serve-#{type}.sh"
+        s.args = [site["map"], site["to"], site["port"] ||= "80", site["ssl"] ||= "443"]
+      end
+
+      # Configure The Cron Schedule
+      if (site.has_key?("schedule") && site["schedule"])
         config.vm.provision "shell" do |s|
           s.name = "Creating Site: " + site["map"]
           s.path = scriptDir + "/serve-#{type}.sh"

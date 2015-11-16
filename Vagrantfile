@@ -35,5 +35,5 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         config.hostsupdater.aliases = settings['sites'].map { |site| site['map'] }
     end
 
-    config.vm.provision "custom", path: "./scripts/provision-custom.sh"
+    config.vm.provision "shell", path: "./scripts/provision-custom.sh"
 end

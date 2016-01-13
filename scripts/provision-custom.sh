@@ -59,3 +59,6 @@ gem install bundler
 rm ./openssl.patch
 "
 # thank to https://gorails.com/setup/ubuntu/14.04 for ruby install step
+
+# thank to https://github.com/npm/npm/issues/7308#issuecomment-84214837
+echo "alias npm='npm --no-bin-links'" >> /home/vagrant/.bashrc

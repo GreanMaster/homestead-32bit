@@ -60,5 +60,10 @@ rm ./openssl.patch
 "
 # thank to https://gorails.com/setup/ubuntu/14.04 for ruby install step
 
+# install nvm and lastest node version
+curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh | bash
+nvm install node
+npm update -g npm
+
 # thank to https://github.com/npm/npm/issues/7308#issuecomment-84214837
 echo "alias npm='npm --no-bin-links'" >> /home/vagrant/.bashrc

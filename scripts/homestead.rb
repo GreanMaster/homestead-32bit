@@ -164,34 +164,34 @@ class Homestead
           type = "symfony2"
         end
 
-      config.vm.provision "shell" do |s|
-        s.path = scriptDir + "/serve-#{type}.sh"
-        s.args = [site["map"], site["to"], site["port"] ||= "80", site["ssl"] ||= "443"]
-      end
-
-      # Configure The Cron Schedule
-      if (site.has_key?("schedule") && site["schedule"])
         config.vm.provision "shell" do |s|
-          s.name = "Creating Site: " + site["map"]
           s.path = scriptDir + "/serve-#{type}.sh"
           s.args = [site["map"], site["to"], site["port"] ||= "80", site["ssl"] ||= "443"]
         end
 
         # Configure The Cron Schedule
-        if (site.has_key?("schedule"))
+        if (site.has_key?("schedule") && site["schedule"])
           config.vm.provision "shell" do |s|
-            s.name = "Creating Schedule"
+            s.name = "Creating Site: " + site["map"]
+            s.path = scriptDir + "/serve-#{type}.sh"
+            s.args = [site["map"], site["to"], site["port"] ||= "80", site["ssl"] ||= "443"]
+          end
 
-            if (site["schedule"])
-              s.path = scriptDir + "/cron-schedule.sh"
-              s.args = [site["map"].tr('^A-Za-z0-9', ''), site["to"]]
-            else
-              s.inline = "rm -f /etc/cron.d/$1"
-              s.args = [site["map"].tr('^A-Za-z0-9', '')]
+          # Configure The Cron Schedule
+          if (site.has_key?("schedule"))
+            config.vm.provision "shell" do |s|
+              s.name = "Creating Schedule"
+
+              if (site["schedule"])
+                s.path = scriptDir + "/cron-schedule.sh"
+                s.args = [site["map"].tr('^A-Za-z0-9', ''), site["to"]]
+              else
+                s.inline = "rm -f /etc/cron.d/$1"
+                s.args = [site["map"].tr('^A-Za-z0-9', '')]
+              end
             end
           end
         end
-
       end
     end
 
@@ -210,19 +210,19 @@ class Homestead
 
     # Configure All Of The Configured Databases
     if settings.has_key?("databases")
-        settings["databases"].each do |db|
-          config.vm.provision "shell" do |s|
-            s.name = "Creating MySQL Database"
-            s.path = scriptDir + "/create-mysql.sh"
-            s.args = [db]
-          end
-
-          config.vm.provision "shell" do |s|
-            s.name = "Creating Postgres Database"
-            s.path = scriptDir + "/create-postgres.sh"
-            s.args = [db]
-          end
+      settings["databases"].each do |db|
+        config.vm.provision "shell" do |s|
+          s.name = "Creating MySQL Database"
+          s.path = scriptDir + "/create-mysql.sh"
+          s.args = [db]
         end
+
+        config.vm.provision "shell" do |s|
+          s.name = "Creating Postgres Database"
+          s.path = scriptDir + "/create-postgres.sh"
+          s.args = [db]
+        end
+      end
     end
 
     # Configure All Of The Server Environment Variables
